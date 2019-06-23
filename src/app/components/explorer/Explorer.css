@@ -1,0 +1,16 @@
+.explorer {
+  background-color: #a80108;
+  min-height: 5vh;
+  display: flex;
+}
+
+.explorer * {
+  line-height: 7.5vh;
+  height: 7.5vh;
+  margin: 1.25vh 0 1.25vh 2.5vmin;
+}
+
+.title {
+  color: #fff;
+  text-transform: uppercase;
+}
