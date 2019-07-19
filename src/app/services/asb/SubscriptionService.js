@@ -10,7 +10,7 @@ const getSub = (namespace, topicPath, subscriptionPath) => new Promise((resolve,
     return reject();
   }
 
-  client.getSubscription(topicPath, subscriptionPath, (err, subscription) => {
+  return client.getSubscription(topicPath, subscriptionPath, (err, subscription) => {
     if (err) {
       return reject(err);
     }
@@ -25,7 +25,7 @@ const getSubs = (namespace, topicPath) => new Promise((resolve, reject) => {
     return reject();
   }
 
-  client.listSubscriptions(topicPath, (err, subscriptions) => {
+  return client.listSubscriptions(topicPath, (err, subscriptions) => {
     if (err) {
       return reject(err);
     }
@@ -40,7 +40,7 @@ const createSub = (namespace, topicPath, subscriptionPath) => new Promise((resol
     return reject();
   }
 
-  client.createSubscription(topicPath, subscriptionPath, (err, subscription) => {
+  return client.createSubscription(topicPath, subscriptionPath, (err, subscription) => {
     if (err) {
       return reject(err);
     }
@@ -55,7 +55,7 @@ const deleteSub = (namespace, topicPath, subscriptionPath) => new Promise((resol
     return reject();
   }
 
-  client.deleteSubscription(topicPath, subscriptionPath, (err) => {
+  return client.deleteSubscription(topicPath, subscriptionPath, (err) => {
     if (err) {
       return reject(err);
     }
@@ -140,4 +140,6 @@ const removeSubRule = (namespace, topicPath, subscriptionPath, ruleName) => new 
   return resolve();
 });
 
+
+export { getSub, getSubs, createSub, deleteSub, peekOnSub, receiveOnSub, getSubRules, addSubRule, removeSubRule };
 export default { getSub, getSubs, createSub, deleteSub, peekOnSub, receiveOnSub, getSubRules, addSubRule, removeSubRule };

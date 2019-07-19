@@ -10,7 +10,7 @@ const getQueue = (namespace, queuePath) => new Promise((resolve, reject) => {
     return reject();
   }
 
-  client.getQueue(queuePath, (err, queue) => {
+  return client.getQueue(queuePath, (err, queue) => {
     if (err) {
       return reject(err);
     }
@@ -25,7 +25,7 @@ const getQueues = (namespace) => new Promise((resolve, reject) => {
     return reject();
   }
 
-  client.listQueues(namespace, (err, queues) => {
+  return client.listQueues(namespace, (err, queues) => {
     if (err) {
       return reject(err);
     }
@@ -40,7 +40,7 @@ const createQueue = (namespace, queuePath) => new Promise((resolve, reject) => {
     return reject();
   }
 
-  client.createQueue(queuePath, (err, queue) => {
+  return client.createQueue(queuePath, (err, queue) => {
     if (err) {
       return reject(err);
     }
@@ -55,7 +55,7 @@ const deleteQueue = (namespace, queuePath) => new Promise((resolve, reject) => {
     return reject();
   }
 
-  client.deleteQueue(queuePath, (err) => {
+  return client.deleteQueue(queuePath, (err) => {
     if (err) {
       return reject(err);
     }
