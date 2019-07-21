@@ -1,6 +1,6 @@
+import { assign, get } from 'lodash';
 import { createServiceBusService } from 'azure';
 import { ServiceBusClient } from '@azure/service-bus';
-import { assign, get } from 'lodash';
 
 const cache = {};
 

@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@azure/service-bus": "1.0.2",
-    "@material-ui/core": "4.1.3",
+    "@azure/service-bus": "1.0.3",
+    "@material-ui/core": "4.2.1",
     "@material-ui/icons": "4.2.1",
     "azure": "2.3.1-preview",
     "bluebird": "3.5.5",
     "dotenv": "8.0.0",
-    "lodash": "4.17.11",
-    "react": "16.8.6",
+    "lodash": "4.17.15",
     "react-dom": "16.8.6",
     "react-scripts": "3.0.1",
+    "react": "16.8.6",
     "typeface-roboto": "0.0.54"
   },
   "scripts": {

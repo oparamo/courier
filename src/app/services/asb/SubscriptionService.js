@@ -1,6 +1,6 @@
+import { get } from 'lodash';
 import { Promise } from 'bluebird';
 import { ReceiveMode } from '@azure/service-bus';
-import { get } from 'lodash';
 
 import ClientFactory from './ServiceBusClientFactory';
 
