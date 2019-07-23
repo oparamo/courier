@@ -15,12 +15,12 @@ const Explorer = function Explorer() {
   const [open, setOpen] = React.useState(true);
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    // setOpen(false);
   };
 
   return (
     <Drawer
-      variant="permanent"
+      variant="persistent"
       classes={{
         paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
       }}
