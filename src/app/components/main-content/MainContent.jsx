@@ -2,14 +2,31 @@ import clsx from 'clsx';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import React from 'react';
+import React, { useState } from 'react';
 
 import MadeWithLove from '../made-with-love/MadeWithLove';
 import styles from './styles';
 
-const MainContent = () => {
+import ipcClient from './client-ipc';
+
+ipcClient.init();
+
+const MainContent = function MainContent() {
   const classes = styles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+
+  const [result, setResult] = useState('');
+
+  const factorial = async () => {
+    let reply = await ipcClient.send('make-factorial', { num: 5 })
+    setResult(reply)
+  };
+
+  const phoneCall = async () => {
+    let reply = await ipcClient.send('ring-ring', { message: 'this is james' })
+    setResult(reply)
+  };
 
   return (
     <main className={classes.content}>
@@ -26,6 +43,14 @@ const MainContent = () => {
           </Grid>
         </Grid>
       </Container>
+      <div className="butt">
+        <h2>Hello</h2>
+
+        <button id="factorial" onClick={factorial}>Compute factorial</button>
+        <button id="call" onClick={phoneCall}>Make phone call</button>
+
+        <div id="output">{result}</div>
+      </div>
       <MadeWithLove />
     </main>
   );

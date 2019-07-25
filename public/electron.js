@@ -1,55 +1,136 @@
-const electron = require('electron');
 const { app, BrowserWindow } = require('electron');
-
+const { fork } = require('child_process');
+const electron = require('electron');
+const isDev = require('electron-is-dev');
 const path = require('path');
-const url = require('url');
+const url = require('url')
+const net = require('net');
+const os = require('os');
+const { join } = require('path');
+const ipc = require('node-ipc');
 
-let mainWindow;
+function isSocketTaken(name, fn) {
+  return new Promise((resolve, reject) => {
+    ipc.connectTo(name, () => {
+      ipc.of[name].on('error', () => {
+        ipc.disconnect(name);
+        resolve(false);
+      });
 
-const createWindow = () => {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({ width: 800, height: 600, webPreferences: { nodeIntegration: true } });
+      ipc.of[name].on('connect', () => {
+        ipc.disconnect(name);
+        resolve(true);
+      });
+    });
+  });
+}
 
-  // and load the index.html of the app.
-  const startUrl = process.env.ELECTRON_START_URL || url.format({
+async function findOpenSocket() {
+  let currentSocket = 1;
+  console.log('checking', currentSocket);
+  while (await isSocketTaken('myapp' + currentSocket)) {
+    currentSocket++;
+    console.log('checking', currentSocket);
+  }
+  console.log('found socket', currentSocket);
+  return 'myapp' + currentSocket;
+}
+
+// const findOpenSocket = require('../electron/find-open-socket');
+
+let clientWin
+let serverWin
+let serverProcess
+
+function createWindow(socketName) {
+  clientWin = new BrowserWindow({
+    width: 800,
+    height: 600,
+    // webPreferences: {
+    //   nodeIntegration: true,
+    //   preload: __dirname + '/../electron/client-preload.js'
+    // }
+  })
+
+  // console.log(path.join(__dirname, '../build/index.html'))
+  // console.log(`file://${path.join(__dirname, '../build/index.html')}`)
+  let startUrl = process.env.ELECTRON_START_URL || url.format({
     pathname: path.join(__dirname, '/../build/index.html'),
     protocol: 'file:',
     slashes: true
   });
-  mainWindow.loadURL(startUrl);
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  // } catch(e) {
+  //   console.log(e)
+  // }
+  // const
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  })
+  console.log(startUrl)
+
+  clientWin.loadURL(startUrl);
+
+  clientWin.webContents.on('did-finish-load', () => {
+    clientWin.webContents.send('set-socket', { name: socketName });
+  });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+function createBackgroundWindow(socketName) {
+  const win = new BrowserWindow({
+    x: 500,
+    y: 300,
+    width: 700,
+    height: 500,
+    show: true,
+    webPreferences: { nodeIntegration: true }
+  });
 
-// Quit when all windows are closed.
+  win.loadURL(`file://${__dirname}/../electron/server-dev.html`);
+
+  win.webContents.on('did-finish-load', () => {
+    win.webContents.send('set-socket', { name: socketName });
+  });
+
+  serverWin = win;
+}
+
+function createBackgroundProcess(socketName) {
+  serverProcess = fork(__dirname + '/../electron/server.js', [
+    '--subprocess',
+    app.getVersion(),
+    socketName
+  ]);
+
+  serverProcess.on('message', (msg) => {
+    console.log(msg);
+  });
+}
+
+app.on('ready', async () => {
+  const serverSocket = await findOpenSocket();
+
+  createWindow(serverSocket);
+
+  if (isDev) {
+    createBackgroundWindow(serverSocket);
+  } else {
+    createBackgroundProcess(serverSocket);
+  }
+});
+
+app.on('before-quit', () => {
+  if (serverProcess) {
+    serverProcess.kill();
+    serverProcess = null;
+  }
+});
+
 app.on('window-all-closed', () => {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
 });
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
-    createWindow()
+    createWindow();
   }
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
