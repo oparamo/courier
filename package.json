@@ -9,12 +9,14 @@
     "azure": "2.3.1-preview",
     "bluebird": "3.5.5",
     "dotenv": "8.0.0",
+    "electron": "5.0.8",
     "lodash": "4.17.15",
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-scripts": "3.0.1",
     "typeface-roboto": "0.0.54"
   },
+  "main": "./electron/index.js",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -35,5 +37,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "homepage": "./"
 }
