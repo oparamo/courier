@@ -1,49 +1,44 @@
-const ipc = require('node-ipc')
+const { get } = require('lodash');
+const { Promise } = require('bluebird');
+const ipc = require('node-ipc');
 
-function init(socketName, handlers) {
-  ipc.config.id = socketName
-  ipc.config.silent = true
+const init = (socketName, handlers) => {
+  ipc.config.id = socketName;
+  ipc.config.silent = true;
 
   ipc.serve(() => {
-    ipc.server.on('message', (data, socket) => {
-      let msg = JSON.parse(data)
-      let { id, name, args } = msg
+    ipc.server.on('message', async (data, socket) => {
+      const msg = JSON.parse(data);
+      const { id, name, args } = msg;
 
-      if (handlers[name]) {
-        handlers[name](args).then(
-          result => {
-            ipc.server.emit(
-              socket,
-              'message',
-              JSON.stringify({ type: 'reply', id, result })
-            )
-          },
-          error => {
-            // Up to you how to handle errors, if you want to forward
-            // them, etc
-            ipc.server.emit(
-              socket,
-              'message',
-              JSON.stringify({ type: 'error', id })
-            )
-            throw error
-          }
-        )
-      } else {
-        console.warn('Unknown method: ' + name)
-        ipc.server.emit(
-          socket,
-          'message',
-          JSON.stringify({ type: 'reply', id, result: null })
-        )
+      const defaultHandler = (name) => {
+        console.warn('unknown method:', name);
+
+        return Promise.resolve(null);
       }
-    })
+
+      const handler = get(handlers, name, defaultHandler);
+
+      let reply;
+
+      try {
+        const result = await handler(args);
+
+        reply = JSON.stringify({ type: 'reply', id, result });
+      } catch (e) {
+        console.error('unexpected error:', e);
+
+        reply = JSON.stringify({ type: 'error', id });
+      }
+
+      ipc.server.emit(socket, 'message', reply);
+    });
   })
 
-  ipc.server.start()
+  ipc.server.start();
 }
 
-function send(name, args) {
+const send = (name, args) => {
   ipc.server.broadcast('message', JSON.stringify({ type: 'push', name, args }))
 }
 

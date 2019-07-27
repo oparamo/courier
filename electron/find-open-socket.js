@@ -1,33 +1,32 @@
-const net = require('net');
-const os = require('os');
-const { join } = require('path');
 const ipc = require('node-ipc');
 
-function isSocketTaken(name, fn) {
-  return new Promise((resolve, reject) => {
-    ipc.connectTo(name, () => {
-      ipc.of[name].on('error', () => {
-        ipc.disconnect(name);
-        resolve(false);
-      });
+const isSocketTaken = (name) => new Promise((resolve) => {
+  console.info('checking socket:', name);
 
-      ipc.of[name].on('connect', () => {
-        ipc.disconnect(name);
-        resolve(true);
-      });
+  ipc.connectTo(name, () => {
+    ipc.of[name].on('error', () => {
+      ipc.disconnect(name);
+      console.info('found socket:', name);
+      resolve(false);
+    });
+
+    ipc.of[name].on('connect', () => {
+      ipc.disconnect(name);
+      resolve(true);
     });
   });
-}
+});
 
-async function findOpenSocket() {
+const findOpenSocket = async () => {
   let currentSocket = 1;
-  console.log('checking', currentSocket);
-  while (await isSocketTaken('myapp' + currentSocket)) {
+  let openSocket = `courier${currentSocket}`;
+
+  while (await isSocketTaken(openSocket)) {
     currentSocket++;
-    console.log('checking', currentSocket);
+    openSocket = `courier${currentSocket}`;
   }
-  console.log('found socket', currentSocket);
-  return 'myapp' + currentSocket;
+
+  return openSocket;
 }
 
 module.exports = findOpenSocket;
