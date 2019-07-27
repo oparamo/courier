@@ -14,7 +14,7 @@ const createWindow = (socketName) => {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       preload: __dirname + '/../electron/client-preload.js'
     }
   })
