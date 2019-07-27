@@ -6,7 +6,6 @@ const isSocketTaken = (name) => new Promise((resolve) => {
   ipc.connectTo(name, () => {
     ipc.of[name].on('error', () => {
       ipc.disconnect(name);
-      console.info('found socket:', name);
       resolve(false);
     });
 
@@ -25,6 +24,8 @@ const findOpenSocket = async () => {
     currentSocket++;
     openSocket = `courier${currentSocket}`;
   }
+
+  console.info('found unoccupied socket: ', openSocket);
 
   return openSocket;
 }
