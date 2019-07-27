@@ -1,5 +1,4 @@
 import {v4} from 'uuid';
-import preload from './client-ipc';
 
 // Init
 async function init() {

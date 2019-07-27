@@ -1,80 +1,34 @@
 const { app, BrowserWindow } = require('electron');
 const { fork } = require('child_process');
-const electron = require('electron');
 const isDev = require('electron-is-dev');
 const path = require('path');
-const url = require('url')
-const net = require('net');
-const os = require('os');
-const { join } = require('path');
-const ipc = require('node-ipc');
 
-function isSocketTaken(name, fn) {
-  return new Promise((resolve, reject) => {
-    ipc.connectTo(name, () => {
-      ipc.of[name].on('error', () => {
-        ipc.disconnect(name);
-        resolve(false);
-      });
+const findOpenSocket = require('../electron/find-open-socket');
 
-      ipc.of[name].on('connect', () => {
-        ipc.disconnect(name);
-        resolve(true);
-      });
-    });
-  });
-}
+let clientWin;
+let serverWin;
+let serverProcess;
 
-async function findOpenSocket() {
-  let currentSocket = 1;
-  console.log('checking', currentSocket);
-  while (await isSocketTaken('myapp' + currentSocket)) {
-    currentSocket++;
-    console.log('checking', currentSocket);
-  }
-  console.log('found socket', currentSocket);
-  return 'myapp' + currentSocket;
-}
-
-// const findOpenSocket = require('../electron/find-open-socket');
-
-let clientWin
-let serverWin
-let serverProcess
-
-function createWindow(socketName) {
+const createWindow = (socketName) => {
   clientWin = new BrowserWindow({
     width: 800,
     height: 600,
-    // webPreferences: {
-    //   nodeIntegration: true,
-    //   preload: __dirname + '/../electron/client-preload.js'
-    // }
+    webPreferences: {
+      nodeIntegration: true,
+      preload: __dirname + '/../electron/client-preload.js'
+    }
   })
 
-  // console.log(path.join(__dirname, '../build/index.html'))
-  // console.log(`file://${path.join(__dirname, '../build/index.html')}`)
-  let startUrl = process.env.ELECTRON_START_URL || url.format({
-    pathname: path.join(__dirname, '/../build/index.html'),
-    protocol: 'file:',
-    slashes: true
-  });
-  // } catch(e) {
-  //   console.log(e)
-  // }
-  // const
-
-  console.log(startUrl)
-
-  clientWin.loadURL(startUrl);
+  const url = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
+  clientWin.loadURL(url);
 
   clientWin.webContents.on('did-finish-load', () => {
     clientWin.webContents.send('set-socket', { name: socketName });
   });
 }
 
-function createBackgroundWindow(socketName) {
-  const win = new BrowserWindow({
+const createBackgroundWindow = (socketName) => {
+  serverWin = new BrowserWindow({
     x: 500,
     y: 300,
     width: 700,
@@ -83,16 +37,17 @@ function createBackgroundWindow(socketName) {
     webPreferences: { nodeIntegration: true }
   });
 
-  win.loadURL(`file://${__dirname}/../electron/server-dev.html`);
+  const url = `file://${path.join(__dirname, '../electron/server-dev.html')}`;
+  serverWin.loadURL(url);
 
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.send('set-socket', { name: socketName });
+  serverWin.webContents.on('did-finish-load', () => {
+    serverWin.webContents.send('set-socket', { name: socketName });
   });
 
-  serverWin = win;
+  serverWin.webContents.openDevTools();
 }
 
-function createBackgroundProcess(socketName) {
+const createBackgroundProcess = (socketName) => {
   serverProcess = fork(__dirname + '/../electron/server.js', [
     '--subprocess',
     app.getVersion(),
@@ -130,7 +85,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (mainWindow === null) {
+  if (clientWin === null) {
     createWindow();
   }
 });

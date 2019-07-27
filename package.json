@@ -37,7 +37,7 @@
     "build": "rescripts build",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron-pack": "electron-builder -m",
+    "electron-pack": "electron-builder -l",
     "postinstall": "electron-builder install-app-deps",
     "preelectron-pack": "yarn build",
     "start": "rescripts start",
@@ -61,11 +61,12 @@
   "build": {
     "appId": "com.oscarparamo.courier",
     "productName": "Courier",
-    "copyright": "Copyright © 2019 ${author}",
+    "copyright": "Copyright © 2019 Oscar Paramo",
     "mac": {
       "category": "public.app-category.utilities"
     },
     "files": [
+      "electron/**/*",
       "build/**/*",
       "node_modules/**/*"
     ],

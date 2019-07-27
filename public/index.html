@@ -13,14 +13,6 @@
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <div id="root"></div>
-  <script>
-    if (!IS_DEV) {
-      var tag = document.createElement('meta');
-      tag.setAttribute("http-equiv", "Content-Security-Policy");
-      tag.setAttribute("content", "default-src 'self'; style-src 'self' 'unsafe-inline';")
-      document.head.appendChild(tag)
-    }
-  </script>
 </body>
 
 </html>
