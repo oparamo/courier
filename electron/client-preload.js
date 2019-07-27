@@ -11,8 +11,8 @@ window.IS_DEV = isDev;
 
 window.getServerSocket = () => socketPromise;
 
-ipcRenderer.on('set-socket', (event, { name }) => {
-  resolveSocketPromise(name);
+ipcRenderer.on('set-socket', (event, { socketName }) => {
+  resolveSocketPromise(socketName);
 });
 
 window.ipcConnect = (id, func) => {

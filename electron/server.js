@@ -14,8 +14,8 @@ if (process.argv[2] === '--subprocess') {
   isDev = true;
   version = remote.app.getVersion();
 
-  ipcRenderer.on('set-socket', (event, { name }) => {
-    ipc.init(name, serverHandlers);
+  ipcRenderer.on('set-socket', (event, { socketName }) => {
+    ipc.init(socketName, serverHandlers);
   });
 }
 

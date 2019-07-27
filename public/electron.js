@@ -1,34 +1,30 @@
 const { app, BrowserWindow } = require('electron');
 const { fork } = require('child_process');
+const { join } = require('path');
 const isDev = require('electron-is-dev');
-const path = require('path');
 
 const findOpenSocket = require('../electron/find-open-socket');
 
-let clientWin;
-let serverWin;
+let clientWindow;
+let serverWindow;
 let serverProcess;
 
 const createWindow = (socketName) => {
-  clientWin = new BrowserWindow({
+  clientWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    webPreferences: {
-      nodeIntegration: false,
-      preload: __dirname + '/../electron/client-preload.js'
-    }
-  })
-
-  const url = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
-  clientWin.loadURL(url);
-
-  clientWin.webContents.on('did-finish-load', () => {
-    clientWin.webContents.send('set-socket', { name: socketName });
+    webPreferences: { preload: join(__dirname, '../electron/client-preload.js') }
   });
+
+  const setSocket = () => { clientWindow.webContents.send('set-socket', { socketName }); };
+  clientWindow.webContents.on('did-finish-load', setSocket);
+
+  const url = isDev ? 'http://localhost:3000' : `file://${join(__dirname, '../build/index.html')}`;
+  clientWindow.loadURL(url);
 }
 
 const createBackgroundWindow = (socketName) => {
-  serverWin = new BrowserWindow({
+  serverWindow = new BrowserWindow({
     x: 500,
     y: 300,
     width: 700,
@@ -37,18 +33,17 @@ const createBackgroundWindow = (socketName) => {
     webPreferences: { nodeIntegration: true }
   });
 
-  const url = `file://${path.join(__dirname, '../electron/server-dev.html')}`;
-  serverWin.loadURL(url);
+  const setSocket = () => { serverWindow.webContents.send('set-socket', { socketName }); };
+  serverWindow.webContents.on('did-finish-load', setSocket);
 
-  serverWin.webContents.on('did-finish-load', () => {
-    serverWin.webContents.send('set-socket', { name: socketName });
-  });
+  serverWindow.webContents.openDevTools();
 
-  serverWin.webContents.openDevTools();
+  const url = `file://${join(__dirname, '../electron/server-dev.html')}`;
+  serverWindow.loadURL(url);
 }
 
 const createBackgroundProcess = (socketName) => {
-  serverProcess = fork(__dirname + '/../electron/server.js', [
+  serverProcess = fork(join(__dirname, '../electron/server.js'), [
     '--subprocess',
     app.getVersion(),
     socketName
@@ -85,7 +80,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (clientWin === null) {
+  if (clientWindow === null) {
     createWindow();
   }
 });
