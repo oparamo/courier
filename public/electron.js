@@ -50,7 +50,7 @@ const createBackgroundProcess = (socketName) => {
   ]);
 
   serverProcess.on('message', (msg) => {
-    console.log(msg);
+    console.info(msg);
   });
 }
 

@@ -12,13 +12,13 @@ handlers['make-factorial'] = async ({ num }) => {
     return n * fact(n - 1);
   };
 
-  console.log('making factorial');
+  console.info('making factorial');
 
   return fact(num);
 }
 
 handlers['ring-ring'] = async () => {
-  console.log('picking up the phone');
+  console.info('picking up the phone');
 
   return 'hello!';
 }
