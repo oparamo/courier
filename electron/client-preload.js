@@ -1,21 +1,21 @@
 const { ipcRenderer } = require('electron');
-const isDev = require('electron-is-dev');
 const ipc = require('node-ipc');
+const isDev = require('electron-is-dev');
 
-let resolveSocketPromise;
-let socketPromise = new Promise((resolve) => {
-  resolveSocketPromise = resolve;
-})
-
-window.IS_DEV = isDev;
-
-window.getServerSocket = () => socketPromise;
-
-ipcRenderer.on('set-socket', (event, { socketName }) => {
-  resolveSocketPromise(socketName);
+const socket = new Promise((resolve) => {
+  ipcRenderer.on('set-socket', (event, { socketName }) => {
+    resolve(socketName);
+  });
 });
 
-window.ipcConnect = (id, func) => {
+window.getServerSocket = () => socket;
+
+window.ipcConnect = (id) => new Promise((resolve) => {
   ipc.config.silent = true;
-  ipc.connectTo(id, () => { func(ipc.of[id]) });
-};
+  ipc.connectTo(id, () => {
+    const client = ipc.of[id];
+    resolve(client);
+  });
+});
+
+window.IS_DEV = isDev;
