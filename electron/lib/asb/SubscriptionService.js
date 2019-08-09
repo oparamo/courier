@@ -140,6 +140,5 @@ const removeSubRule = (namespace, topicPath, subscriptionPath, ruleName) => new 
   return resolve();
 });
 
-
 export { getSub, getSubs, createSub, deleteSub, peekOnSub, receiveOnSub, getSubRules, addSubRule, removeSubRule };
 export default { getSub, getSubs, createSub, deleteSub, peekOnSub, receiveOnSub, getSubRules, addSubRule, removeSubRule };

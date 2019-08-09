@@ -25,4 +25,5 @@ const getAmqpClient = (namespace) => get(cache, `${namespace}.amqpClient`, null)
 
 const getRestClient = (namespace) => get(cache, `${namespace}.restClient`, null);
 
+export { addNamespace, getAmqpClient, getRestClient };
 export default { addNamespace, getAmqpClient, getRestClient };
