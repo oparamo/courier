@@ -1,5 +1,5 @@
-const ipc = require('./server-ipc');
-const serverHandlers = require('./server-handlers');
+const ipc = require('./lib/ipc');
+const serverHandlers = require('./handlers');
 
 let isDev, version;
 

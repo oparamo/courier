@@ -1,8 +1,8 @@
-import { get } from 'lodash';
-import { Promise } from 'bluebird';
-import { ReceiveMode } from '@azure/service-bus';
+const { get } = require('lodash');
+const { Promise } = require('bluebird');
+const { ReceiveMode } = require('@azure/service-bus');
 
-import ClientFactory from './ServiceBusClientFactory';
+const ClientFactory = require('./ServiceBusClientFactory');
 
 const getQueue = (namespace, queuePath) => new Promise((resolve, reject) => {
   const client = ClientFactory.getRestClient(namespace);
@@ -116,5 +116,12 @@ const receiveOnQueue = (namespace, queuePath, options) => new Promise(async (res
   return resolve(messages);
 });
 
-export { getQueue, getQueues, createQueue, deleteQueue, sendToQueue, peekOnQueue, receiveOnQueue };
-export default { getQueue, getQueues, createQueue, deleteQueue, sendToQueue, peekOnQueue, receiveOnQueue };
+module.exports = {
+  getQueue,
+  getQueues,
+  createQueue,
+  deleteQueue,
+  sendToQueue,
+  peekOnQueue,
+  receiveOnQueue
+};

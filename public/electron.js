@@ -3,7 +3,7 @@ const { fork } = require('child_process');
 const { join } = require('path');
 const isDev = require('electron-is-dev');
 
-const findOpenSocket = require('../electron/find-open-socket');
+const { findOpenSocket } = require('../electron/lib/ipc');
 
 let clientWindow;
 let serverWindow;

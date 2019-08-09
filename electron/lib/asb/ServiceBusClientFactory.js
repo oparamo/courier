@@ -1,6 +1,6 @@
-import { assign, get } from 'lodash';
-import { createServiceBusService } from 'azure';
-import { ServiceBusClient } from '@azure/service-bus';
+const { assign, get } = require('lodash');
+const { createServiceBusService } = require('azure');
+const { ServiceBusClient } = require('@azure/service-bus');
 
 const cache = {};
 
@@ -11,7 +11,7 @@ const addNamespace = (connectionString) => {
   }
 
   const amqpClient = ServiceBusClient.createFromConnectionString(connectionString);
-  if (!amqpClient ) {
+  if (!amqpClient) {
     throw Error('Could not initialize Service Bus client.');
   }
 
@@ -25,5 +25,4 @@ const getAmqpClient = (namespace) => get(cache, `${namespace}.amqpClient`, null)
 
 const getRestClient = (namespace) => get(cache, `${namespace}.restClient`, null);
 
-export { addNamespace, getAmqpClient, getRestClient };
-export default { addNamespace, getAmqpClient, getRestClient };
+module.exports = { addNamespace, getAmqpClient, getRestClient };

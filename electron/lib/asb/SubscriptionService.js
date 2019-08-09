@@ -1,8 +1,8 @@
-import { get } from 'lodash';
-import { Promise } from 'bluebird';
-import { ReceiveMode } from '@azure/service-bus';
+const { get } = require('lodash');
+const { Promise } = require('bluebird');
+const { ReceiveMode } = require('@azure/service-bus');
 
-import ClientFactory from './ServiceBusClientFactory';
+const ClientFactory = require('./ServiceBusClientFactory');
 
 const getSub = (namespace, topicPath, subscriptionPath) => new Promise((resolve, reject) => {
   const client = ClientFactory.getRestClient(namespace);
@@ -140,5 +140,14 @@ const removeSubRule = (namespace, topicPath, subscriptionPath, ruleName) => new 
   return resolve();
 });
 
-export { getSub, getSubs, createSub, deleteSub, peekOnSub, receiveOnSub, getSubRules, addSubRule, removeSubRule };
-export default { getSub, getSubs, createSub, deleteSub, peekOnSub, receiveOnSub, getSubRules, addSubRule, removeSubRule };
+module.exports = {
+  getSub,
+  getSubs,
+  createSub,
+  deleteSub,
+  peekOnSub,
+  receiveOnSub,
+  getSubRules,
+  addSubRule,
+  removeSubRule
+};

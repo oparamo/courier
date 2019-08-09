@@ -1,6 +1,6 @@
-import { Promise } from 'bluebird';
+const { Promise } = require('bluebird');
 
-import ClientFactory from './ServiceBusClientFactory';
+const ClientFactory = require('./ServiceBusClientFactory');
 
 const getTopic = (namespace, topicPath) => new Promise((resolve, reject) => {
   const client = ClientFactory.getRestClient(namespace);
@@ -84,5 +84,4 @@ const sendToTopic = (namespace, topicPath, messages) => new Promise(async (resol
   return resolve();
 });
 
-export { getTopic, getTopics, createTopic, deleteTopic, sendToTopic };
-export default { getTopic, getTopics, createTopic, deleteTopic, sendToTopic };
+module.exports = { getTopic, getTopics, createTopic, deleteTopic, sendToTopic };
