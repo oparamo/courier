@@ -2,8 +2,6 @@ const { get } = require('lodash');
 const { Promise } = require('bluebird');
 const ipc = require('node-ipc');
 
-const ServiceBus = require('../asb');
-
 const isSocketTaken = (name) => new Promise((resolve) => {
   console.info('checking socket:', name);
 
@@ -21,8 +19,6 @@ const isSocketTaken = (name) => new Promise((resolve) => {
 });
 
 const findOpenSocket = async () => {
-
-
   let currentSocket = 1;
   let openSocket = `courier${currentSocket}`;
 
@@ -34,7 +30,7 @@ const findOpenSocket = async () => {
   console.info('found unoccupied socket: ', openSocket);
 
   return openSocket;
-}
+};
 
 const init = (socketName, handlers) => {
   ipc.config.id = socketName;
@@ -49,7 +45,7 @@ const init = (socketName, handlers) => {
         console.warn('unknown method:', name);
 
         return Promise.resolve(null);
-      }
+      };
 
       const handler = get(handlers, name, defaultHandler);
 
@@ -67,13 +63,13 @@ const init = (socketName, handlers) => {
 
       ipc.server.emit(socket, 'message', reply);
     });
-  })
+  });
 
   ipc.server.start();
-}
+};
 
 const send = (name, args) => {
-  ipc.server.broadcast('message', JSON.stringify({ type: 'push', name, args }))
-}
+  ipc.server.broadcast('message', JSON.stringify({ type: 'push', name, args }));
+};
 
-module.exports = { findOpenSocket, init, send }
+module.exports = { findOpenSocket, init, send };

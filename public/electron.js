@@ -6,8 +6,8 @@ const isDev = require('electron-is-dev');
 const { findOpenSocket } = require('../electron/lib/ipc');
 
 let clientWindow;
-let serverWindow;
 let serverProcess;
+let serverWindow;
 
 const createWindow = (socketName) => {
   clientWindow = new BrowserWindow({
@@ -16,7 +16,10 @@ const createWindow = (socketName) => {
     webPreferences: { preload: join(__dirname, '../electron/client-preload.js') }
   });
 
-  const setSocket = () => { clientWindow.webContents.send('set-socket', { socketName }); };
+  const setSocket = () => {
+    clientWindow.webContents.send('set-socket', { socketName });
+  };
+
   clientWindow.webContents.on('did-finish-load', setSocket);
 
   const url = isDev ? 'http://localhost:3000' : `file://${join(__dirname, '../build/index.html')}`;
@@ -33,7 +36,10 @@ const createBackgroundWindow = (socketName) => {
     webPreferences: { nodeIntegration: true }
   });
 
-  const setSocket = () => { serverWindow.webContents.send('set-socket', { socketName }); };
+  const setSocket = () => {
+    serverWindow.webContents.send('set-socket', { socketName });
+  };
+
   serverWindow.webContents.on('did-finish-load', setSocket);
 
   serverWindow.webContents.openDevTools();
