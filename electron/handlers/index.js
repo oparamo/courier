@@ -1,10 +1,10 @@
+const { assign } = require('lodash');
+
+const asbHandlers = require('./asb');
+
 const handlers = {};
 
-handlers._history = [];
-
 handlers['make-factorial'] = async ({ num }) => {
-  handlers._history.push(num);
-
   const fact = (n) => {
     if (n === 1) {
       return 1;
@@ -15,12 +15,12 @@ handlers['make-factorial'] = async ({ num }) => {
   console.info('making factorial');
 
   return fact(num);
-}
+};
 
 handlers['ring-ring'] = async () => {
   console.info('picking up the phone');
 
   return 'hello!';
-}
+};
 
-module.exports = handlers;
+module.exports = assign(handlers, asbHandlers);

@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { send } from '../../lib/ipc';
 import MadeWithLove from '../made-with-love/MadeWithLove';
 import styles from './styles';
+import AddNamespace from '../add-namespace/AddNamespace';
 
 const MainContent = function MainContent() {
   const classes = styles();
@@ -42,6 +43,9 @@ const MainContent = function MainContent() {
 
               <div id="output">{result}</div>
             </div>
+          </Paper>
+          <Paper className={classes.paper}>
+            <AddNamespace />
           </Paper>
         </Grid>
       </Container>

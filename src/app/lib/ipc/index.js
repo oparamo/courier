@@ -84,7 +84,7 @@ const send = (name, args) => new Promise((resolve, reject) => {
   if (isConnected) {
     client.emit('message', message);
   } else {
-    console.warn('pushing to local messages queue');
+    console.info('pushing to local messages queue');
 
     messages.push(message);
   }
